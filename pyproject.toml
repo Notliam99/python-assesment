@@ -1,0 +1,7 @@
+[project]
+name = "python-assesment"
+version = "0.1"
+
+dependencies = [
+    "fastapi[standard]",
+]
