@@ -3,5 +3,7 @@ name = "python-assesment"
 version = "0.1"
 
 dependencies = [
-    "fastapi[standard]",
+    "starlette", # NOTE: Asgi Web framework
+    "hypercorn", # NOTE: async webserver
+    "pydantic" # NOTE: not used yet...
 ]
