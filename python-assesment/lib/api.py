@@ -1,9 +1,9 @@
 from starlette.responses import JSONResponse
-from starlette.routing import Route
+from starlette.routing import Route, Mount
 from starlette.schemas import SchemaGenerator
+import typing
 
 # NOTE: decorators Are Working
-# TODO: Add nested paths to route_init
 
 def route_fn(path: str, methods: list[str], context: dict):
     """
@@ -23,9 +23,11 @@ def route_init(path="/"):
     def decorator(f):
         def wraper(self, *args, **kwargs):
             result = f(self, *args, **kwargs)
+            list_routes = list[Route]()
             for func_name, route_config in self.context.items():
                 # TODO: Nested path Routing
-                self.routes.append(Route(path=route_config["path"], endpoint=getattr(self, func_name), methods=route_config["methods"]))
+                list_routes.append(Route(path=route_config["path"], endpoint=getattr(self, func_name), methods=route_config["methods"]))
+            self.mount = Mount(path=path, routes=list_routes)
             return result
         return wraper
     return decorator
@@ -36,13 +38,12 @@ class API:
     """
     context = dict()
 
-    @route_init(path="/")
+    @route_init(path="/hello")
     def __init__(self):
         """
         Initalise Class to use this class must use the example setup showen here
         """
-        self.routes = list[Route]()
-
+        self.mount = None
         self.schemas = SchemaGenerator({"openapi": "3.0.0", "info": {"title": "Example API", "version": "1.0"}})
 
     @route_fn(path="/hello", methods=["GET"], context=context)

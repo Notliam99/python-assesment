@@ -8,7 +8,7 @@ import asyncio
 api = API()
 
 # NOTE: api.routes list of Routes Defined by decorated functions
-app = Starlette(routes=api.routes)
+app = Starlette(routes=[api.mount])
 
 if __name__ == "__main__":
     config = Config()
