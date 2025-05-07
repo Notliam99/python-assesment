@@ -2,7 +2,7 @@
 Making a simple contact directory api.
 
 ## Run
-```
+```zsh
 # Create Virtual Envroment (venv)
 python -m venv .venv
 
@@ -16,5 +16,6 @@ source .venv/bin/activate
 python -m pip install .
 
 # Run Project
-python ./python-assesment/main.py
+cd ./python-assesment
+python main.py # NOTE: `python ./python-assesment/main.py` Doesn't work
 ```
