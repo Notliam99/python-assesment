@@ -1,6 +1,7 @@
 from starlette.responses import JSONResponse
 from starlette.routing import Route, Mount
 from starlette.schemas import SchemaGenerator
+from starlette.requests import HTTPConnection, HTTPException
 import typing
 
 # NOTE: decorators Are Working
@@ -10,10 +11,8 @@ def route_fn(path: str, methods: list[str], context: dict):
     Apply To functions to be turned into routes
     """
     def decorator(f):
-        async def wraper(self, request):
-            return await f(self, request)
         context[f.__name__] = {"path": path, "methods": methods}
-        return wraper
+        return f
     return decorator
 
 def route_init(path="/"):
@@ -23,11 +22,11 @@ def route_init(path="/"):
     def decorator(f):
         def wraper(self, *args, **kwargs):
             result = f(self, *args, **kwargs)
-            list_routes = list[Route]()
+            self.list_routes = list[Route]()
             for func_name, route_config in self.context.items():
                 # TODO: Nested path Routing
-                list_routes.append(Route(path=route_config["path"], endpoint=getattr(self, func_name), methods=route_config["methods"]))
-            self.mount = Mount(path=path, routes=list_routes)
+                self.list_routes.append(Route(path=route_config["path"], endpoint=getattr(self, func_name), methods=route_config["methods"], include_in_schema=True))
+            self.mount = Mount(path=path, routes=self.list_routes)
             return result
         return wraper
     return decorator
@@ -43,11 +42,11 @@ class API:
         """
         Initalise Class to use this class must use the example setup showen here
         """
+        self.list_routes = None
         self.mount = None
-        self.schemas = SchemaGenerator({"openapi": "3.0.0", "info": {"title": "Example API", "version": "1.0"}})
 
     @route_fn(path="/hello", methods=["GET"], context=context)
-    async def hello_world(self, request) -> dict:
+    async def hello_world(self, request: HTTPConnection) -> JSONResponse:
         """
         responses:
             200:
@@ -56,3 +55,10 @@ class API:
                     hello
         """
         return JSONResponse({"message": "hello_world"})
+
+    @route_fn(path="/hello_name", methods=["GET"], context=context)
+    async def hello_name(self, request) -> JSONResponse:
+        try:
+            return JSONResponse({"message": {"hello": request.query_params["name"]}})
+        except KeyError:
+            raise HTTPException(status_code=400, detail="Bad/Malformed Request")
