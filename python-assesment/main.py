@@ -3,6 +3,8 @@ from starlette.routing import Route, Mount # NOTE: Routing Classes
 from starlette.routing import RedirectResponse # NOTE: Redirect for `/docs`
 from starlette.staticfiles import StaticFiles # NOTE: StaticFiles Serve Class
 from starlette.schemas import SchemaGenerator # NOTE: OpenApi Spec Schema Gen
+from starlette.middleware import Middleware # TODO: Make NOTE
+from starlette.middleware.cors import CORSMiddleware # NOTE: Cross Origin Middleware
 from hypercorn import Config # NOTE: Async WebServer Config
 from hypercorn.asyncio import serve # NOTE: Compatible Server For [`asyncio`]
 from lib.api import API # NOTE: Core API Class
@@ -23,7 +25,7 @@ build a complex python application like this one.
 
 # NOTE: base schema e.g. version title ect...
 schema = SchemaGenerator({
-    "openapi": "3.0.0",
+    "openapi": "3.1.0",
     "info": {
         "title": "Python Assesment",
         "version": "0.1",
@@ -39,10 +41,12 @@ schema = SchemaGenerator({
             "url": "https://opensource.org/license/agpl-v3"
         },
     },
-    "servers": {
-        "url": "http://localhost:8000/",
-        "description": "local server url"
-    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/",
+            "description": "local server url"
+        }
+    ],
     "externalDocs": {
         "description": "GitHub Repository",
         "url": "https://github.com/Notliam99/python-assesment.git"
@@ -62,7 +66,8 @@ app = Starlette(
                 openapi_url="/v0.1/schema.json",
                 title="hello",
                 layout=Layout.MODERN,
-                scalar_theme=""
+                scalar_theme="",
+                scalar_favicon_url="https://scalar.com/favicon.svg"
             )
         ),
         # NOTE: Route With OpenAPI(3.0) Schema
@@ -71,6 +76,9 @@ app = Starlette(
             endpoint=lambda request: schema.OpenAPIResponse(request=request),
             include_in_schema=False
         ),
+    ],
+    middleware=[
+        Middleware(CORSMiddleware, allow_origins=["*"])
     ]
 )
 

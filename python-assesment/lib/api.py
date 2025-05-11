@@ -4,6 +4,7 @@ from starlette.schemas import SchemaGenerator
 from starlette.requests import HTTPConnection, HTTPException
 from lib.api_framework import route_init, route_fn
 import typing
+from typing import Annotated
 
 class API:
     """
@@ -28,10 +29,6 @@ class API:
         description: |
             # Hello!!!
 
-            ```python
-            print("helloworld")
-            ```
-
             Have you or someone you know ever wanted to say hello but cant.
             *Well this is the route for you. 👍*
         parameters:
@@ -45,11 +42,27 @@ class API:
         responses:
             200:
                 description: saying hello
-                examples:
-                    {"message": {"hello": "jeff"}}
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            description: Message Object
+                            required:
+                                - "message"
+                            properties:
+                                message:
+                                    type: object
+                                    required:
+                                        - "hello"
+                                    properties:
+                                        hello:
+                                            type: string
+                                            default: "<Name>"
         """
         try:
             # NOTE: Could return a error if qurey pram not found
-            return JSONResponse({"message": {"hello": request.query_params["name"]}})
+            return JSONResponse({
+                "message": {"hello": request.query_params["name"]}
+            })
         except KeyError: # NOTE: Catch possible Error
             raise HTTPException(status_code=400, detail="Bad/Malformed Request")
