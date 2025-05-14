@@ -1,15 +1,16 @@
-from starlette.applications import Starlette # NOTE: ASGI Server
-from starlette.routing import Route, Mount # NOTE: Routing Classes
-from starlette.routing import RedirectResponse # NOTE: Redirect for `/docs`
-from starlette.staticfiles import StaticFiles # NOTE: StaticFiles Serve Class
-from starlette.schemas import SchemaGenerator # NOTE: OpenApi Spec Schema Gen
-from starlette.middleware import Middleware # TODO: Make NOTE
-from starlette.middleware.cors import CORSMiddleware # NOTE: Cross Origin Middleware
-from hypercorn import Config # NOTE: Async WebServer Config
-from hypercorn.asyncio import serve # NOTE: Compatible Server For [`asyncio`]
-from lib.api import API # NOTE: Core API Class
-from lib.person import Person # NOTE: Person DataClass
-import asyncio # NOTE: Async Runtime
+from starlette.applications import Starlette  # NOTE: ASGI Server
+from starlette.routing import Route, Mount  # NOTE: Routing Classes
+from starlette.routing import RedirectResponse  # NOTE: Redirect for `/docs`
+from starlette.staticfiles import StaticFiles  # NOTE: StaticFiles Serve Class
+from starlette.schemas import SchemaGenerator  # NOTE: OpenApi Spec Schema Gen
+from starlette.middleware import Middleware  # NOTE: Request Middleware
+# NOTE: Cross Origin Middleware
+from starlette.middleware.cors import CORSMiddleware
+from hypercorn import Config  # NOTE: Async WebServer Config
+from hypercorn.asyncio import serve  # NOTE: Compatible Server For [`asyncio`]
+from lib.api import API  # NOTE: Core API Class
+from lib.person import Person  # NOTE: Person DataClass
+import asyncio  # NOTE: Async Runtime
 from scalar_fastapi import get_scalar_api_reference
 from scalar_fastapi.scalar_fastapi import Layout
 

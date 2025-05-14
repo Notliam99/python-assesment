@@ -1,5 +1,7 @@
-from typing import Annotated # NOTE: Annotate Parameter Fields
-from pydantic import BaseModel # NOTE: BaseModel Is A Way To Describe A Custom Type
+from typing import Annotated  # NOTE: Annotate Parameter Fields
+# NOTE: BaseModel Is A Way To Describe A Custom Type
+from pydantic import BaseModel
+
 
 class Person(BaseModel):
     """

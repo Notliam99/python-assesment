@@ -1,23 +1,28 @@
 # NOTE: Responses types
 from starlette.responses import JSONResponse, StreamingResponse
-from starlette.routing import Route, Mount # NOTE: Routing types/classes
-from starlette.requests import HTTPException, Request # NOTE: Request/Error Type
-from json.decoder import JSONDecodeError # NOTE: Exeption Type
-from lib.api_framework import route_init, route_fn # NOTE: Custom API Router
-from lib.person import Person # NOTE: Custom Person Type
-from typing import Annotated # NOTE: Annotate Function Parameters
+from starlette.routing import Route, Mount  # NOTE: Routing types/classes
+from starlette.requests import HTTPException, Request  # NOTE: Request/Error Type
+from json.decoder import JSONDecodeError  # NOTE: Exeption Type
+from lib.api_framework import route_init, route_fn  # NOTE: Custom API Router
+from lib.person import Person  # NOTE: Custom Person Type
+from typing import Annotated  # NOTE: Annotate Function Parameters
+
 
 class API:
     """
     API Class + Custom Router Accesable at `/api`
     """
-    # NOTE: Important to give [`lib.api_framework.route_init`] context of Routes
+    # NOTE: Important to give [`lib.api_framework.route_init`] context
     context = dict()
 
     @route_init(path="/api")
-    def __init__(self, people: Annotated[list[Person], "List Of Registed People"]):
+    def __init__(
+            self,
+            people: Annotated[list[Person], "List Of Registed People"]
+    ) -> None:
         """
-        Initalise Class to use this class must use the example setup showen here
+        Initalise Class to use this class must use the example setup showen
+        here.
         """
         self.people = people
 
@@ -56,13 +61,15 @@ class API:
                                 type: string
                                 description: |
                                     Email for contact e.g.
-                                    "[example@example.com](mailto:example@example.com)"
+                                    "[example@example.com]\
+                                    (mailto:example@example.com)"
                                     this is **Required**
                             image:
                                 type: string
                                 description: |
                                     Base64 encoded image e.g.
-                                    "https://upload.wikimedia.org/wikipedia/commons/1/1c/A_Daisy_flower.jpg"
+                                    "https://upload.wikimedia.org\
+                                    /wikipedia/commons/1/1c/A_Daisy_flower.jpg"
                                     this is **Optional**.
         responses:
             200:
@@ -89,7 +96,10 @@ class API:
         try:
             body = await request.json()
         except JSONDecodeError as error:
-            raise HTTPException(status_code=400, detail=f"Bad/Malformed Request Error: '{error}'")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Bad/Malformed Request Error: '{error}'"
+            )
 
         # NOTE: Input Validation
         try:
@@ -98,16 +108,24 @@ class API:
             if (email := body["email"]) == "":
                 raise KeyError("Key: [`email`] Incorectly Set")
         except KeyError as error:
-            raise HTTPException(status_code=400, detail=f"Bad/Malformed Request Missing Key: {error}")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Bad/Malformed Request Missing Key: {error}"
+            )
 
         # NOTE: Storing UserData
-        self.people.append(Person(name=name, email=email, image=body.get("image", b'')))
+        self.people.append(
+            Person(name=name, email=email, image=body.get("image", b''))
+        )
 
         # NOTE: Json Response
         return JSONResponse({"message": "User Was Created"})
 
     @route_fn(path="/list", methods=["GET"], context=context)
-    async def list_people(self, request: Annotated[Request, "Request Data"]) -> StreamingResponse:
+    async def list_people(
+            self,
+            request: Annotated[Request, "Request Data"]
+    ) -> StreamingResponse:
         """
         summary: Get A List Of Created People
         description: |
@@ -135,24 +153,38 @@ class API:
                                         type: string
                                         description: |
                                             # Name
-                                            This is the name of the user/client
+                                            This is the name of the\
+                                            user/client
                                     email:
                                         type: string
                                         description: |
                                             # Email
-                                            This is the email of the user/client
+                                            This is the email of the\
+                                            user/client
                                     image:
                                         type: string
                                         description: |
                                             # Image
-                                            This is a optional link for a image
+                                            This is a optional link for a\
+                                            image
 
         """
         # NOTE: Async Response
-        return StreamingResponse(self.people_json(), media_type="application/json")
+        return StreamingResponse(
+            self.people_json(),
+            media_type="application/json"
+        )
 
-    @route_fn(path="/", methods=["GET"], context=context, include_in_schema=False)
-    async def list_people_html(self, request: Annotated[Request, "Request Data"]) -> StreamingResponse:
+    @route_fn(
+        path="/",
+        methods=["GET"],
+        context=context,
+        include_in_schema=False
+    )
+    async def list_people_html(
+            self,
+            request: Annotated[Request, "Request Data"]
+    ) -> StreamingResponse:
         """
         summary: Html Page Of Created People
         description: |
@@ -164,7 +196,6 @@ class API:
         """
         # NOTE: Async Response
         return StreamingResponse(self.people_html(), media_type="text/html")
-
 
     async def people_json(self):
         """
@@ -206,11 +237,15 @@ class API:
                 margin: 0.5rem"
             >
                 <div style="display: flex; justify-content: space-evenly;">
-                    {f'<img src="{person.image}" style="margin: 0.5rem; height: 3rem; width: 3rem; clip-path: circle()">' if person.image != '' else ''}
+                    {f'<img src="{person.image}" style="margin: 0.5rem; \
+                    height: 3rem; width: 3rem; clip-path: circle()">\
+                    'if person.image != '' else ''}
                     <h1 style="margin: 0.5 rem">{person.name}</h1>
                 </div>
                 <p style="margin: 0.5rem">
-                        Email: <a href="mailto:{person.email}">{person.email}</a>
+                        Email: <a href="mailto:{person.email}">
+                            {person.email}
+                        </a>
                 </p>
             </div>
             """
@@ -221,7 +256,10 @@ class API:
         """
 
     @route_fn(path="/hello_name", methods=["GET"], context=context)
-    async def hello_name(self, request: Annotated[Request, "Request Data"]) -> JSONResponse:
+    async def hello_name(
+            self,
+            request: Annotated[Request, "Request Data"]
+    ) -> JSONResponse:
         """
         summary: "Test Route: Hello"
         description: |
@@ -270,5 +308,8 @@ class API:
             return JSONResponse({
                 "message": {"hello": request.query_params["name"]}
             })
-        except KeyError as error: # NOTE: Catch possible Error
-            raise HTTPException(status_code=400, detail=f"Bad/Malformed Request: {error}")
+        except KeyError as error:  # NOTE: Catch possible Error
+            raise HTTPException(
+                status_code=400,
+                detail=f"Bad/Malformed Request: {error}"
+            )
