@@ -8,19 +8,29 @@ from starlette.middleware.cors import CORSMiddleware # NOTE: Cross Origin Middle
 from hypercorn import Config # NOTE: Async WebServer Config
 from hypercorn.asyncio import serve # NOTE: Compatible Server For [`asyncio`]
 from lib.api import API # NOTE: Core API Class
+from lib.person import Person # NOTE: Person DataClass
 import asyncio # NOTE: Async Runtime
 from scalar_fastapi import get_scalar_api_reference
 from scalar_fastapi.scalar_fastapi import Layout
 
+people: list[Person] = []
+
 # NOTE: API class
-api = API()
+api = API(people=people)
+
 project_description = """
 # Wellcome To The API Docs
 ***
+
 This API is part of a school project called
 [AS91906](https://www.nzqa.govt.nz/nqfdocs/ncea-resource/achievements/2024/as91906.pdf)
 if your from the future this will likely no longer exist. The rough idea is to
 build a complex python application like this one.
+
+> [!tip] **Tip: WebView**
+> <br>
+> To Accesss A Asynchronous HTML View Folow This Link:
+> [http://localhost:8080/api/](/api).
 """
 
 # NOTE: base schema e.g. version title ect...
@@ -61,7 +71,7 @@ app = Starlette(
         # NOTE: Bellow Routes/Mounts are related to API docs only.
         # NOTE: Scalar api client
         Route(
-            path="/docs",
+            path="/",
             endpoint=lambda request: get_scalar_api_reference(
                 openapi_url="/v0.1/schema.json",
                 title="hello",
@@ -77,6 +87,7 @@ app = Starlette(
             include_in_schema=False
         ),
     ],
+    # NOTE: Allow All Origins
     middleware=[
         Middleware(CORSMiddleware, allow_origins=["*"])
     ]
