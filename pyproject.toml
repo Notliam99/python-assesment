@@ -3,8 +3,9 @@ name = "python-assesment"
 version = "0.1"
 
 dependencies = [
-    "starlette", # NOTE: Asgi Web framework
-    "hypercorn", # NOTE: async webserver
-    "pydantic", # NOTE: not used yet...
-    "scalar-fastapi" # NOTE: OpenAPI(3.0) Web Interface
+    "starlette==0.46.2", # NOTE: Asgi Web framework
+    "hypercorn==0.17.3", # NOTE: async webserver
+    "scalar-fastapi==1.0.3", # NOTE: OpenAPI(3.0) Web Interface
+    "fastapi==0.115.12", # NOTE: Dependency Of [`scalar-fastapi`], Not In Code
+    "pyyaml==6.0.2" # NOTE: Parse OpenAPI Spec Doc-Strings
 ]
